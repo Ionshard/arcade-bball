@@ -1,12 +1,12 @@
 [package]
-name = "bball"
+name = "arcade-bball"
 version = "0.1.0"
 authors = ["Victor Ling <victorling@ionshard.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [[bin]]
-name = "bball"
+name = "arcade-bball"
 test = false
 bench = false
 

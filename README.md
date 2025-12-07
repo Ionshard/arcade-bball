@@ -1,4 +1,4 @@
-bball
+Arcade Basket Ball
 =====
 
 Rust project for the _Arduino Uno_.
@@ -32,3 +32,60 @@ at your option.
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall
 be dual licensed as above, without any additional terms or conditions.
+
+# How this Repo was Setup
+
+- Working on windows
+	- To get USB into WSL2
+		- In an admin command prompt:
+			-
+			  ```cmd
+			  wsl --update # Need to update WSL2 kernal to support USB-IP
+			  ```
+		- Install usbipd-win
+			- https://github.com/dorssel/usbipd-win
+			- I installed via chocolatey
+		- In an admin command prompt:
+			-
+			  ```cmd
+			  usbipd list
+			  # Find busid for Arduino
+			  usbip bind --busid=<busid>
+			  usbip attach --wsl --busid=<busid>
+			  ```
+		- In WSL
+			-
+			  ```bash
+			  lsusb
+			  # Should see Arduino Uno
+			  ls /dev/ttyACM*
+			  # Should see /dev/ttyACM0
+			  ```
+	- In WSL2:
+		-
+		  ```bash
+		  sudo apt-get update
+		  
+		  # Install Rust
+		  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+		  # Install cargo-generate dependencies
+		  sudo apt install libudev-dev pkg-config
+		  
+		  # Install Cargo tools
+		  cargo install cargo-generate
+		  cargo install cargo-binstall
+		  cargo install ravedude
+		  cd Projects
+		  mkdir embedded
+		  cd embedded
+		  # Create template for Arduino Project (Select Arduino Uno from menu)
+		  cargo generate --git https://github.com/Rahix/avr-hal-template.git
+		  # Project name: (arcade-bbal)
+		  cd arcade-bball
+		  # Install AVR Dependencies
+		  sudo apt-get install binutils gcc-avr avr-libc avrdude
+		  
+		  # Flash device
+		  cargo run
+		  ```
+	- Should now see the LED on Arduino blinking!
