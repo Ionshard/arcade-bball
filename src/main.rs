@@ -24,9 +24,12 @@ fn main() -> ! {
 
     let mut led = pins.d13.into_output();
 
+    let switch = pins.d7.into_pull_up_input();
+
     loop {
         led.toggle();
         arduino_hal::delay_ms(1000);
-        uwriteln!(&mut serial, "Toggling LED").unwrap_infallible();
+        let message = if switch.is_high() { "Switch is HIGH" } else { "Switch is LOW"};
+        uwriteln!(&mut serial, "{}", message).unwrap_infallible();
     }
 }
