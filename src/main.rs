@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use arduino_hal::prelude::*;
+use arduino_hal::{adc, prelude::*};
 use panic_halt as _;
 use ufmt::{uwriteln};
 
@@ -26,10 +26,28 @@ fn main() -> ! {
 
     let switch = pins.d7.into_pull_up_input();
 
+    let mut adc = arduino_hal::Adc::new(dp.ADC, Default::default());
+
+    let (vbg, gnd, tmp) = (
+        adc.read_blocking(&adc::channel::Vbg),
+        adc.read_blocking(&adc::channel::Gnd),
+        adc.read_blocking(&adc::channel::Temperature),
+    );
+
+    uwriteln!(&mut serial, "Vbandgap: {}", vbg).unwrap_infallible();
+    uwriteln!(&mut serial, "GND: {}", gnd).unwrap_infallible();
+    uwriteln!(&mut serial, "Temperature: {}", tmp).unwrap_infallible();
+
+    let a0 = pins.a0.into_analog_input(&mut adc);
+
     loop {
         led.toggle();
         arduino_hal::delay_ms(1000);
-        let message = if switch.is_high() { "Switch is HIGH" } else { "Switch is LOW"};
+        let message = if switch.is_high() { "Pin (D7) is HIGH" } else { "Pin (D7) is LOW"};
         uwriteln!(&mut serial, "{}", message).unwrap_infallible();
+
+        let a0_value = a0.analog_read(&mut adc);
+        uwriteln!(&mut serial, "Analog A0: {}", a0_value).unwrap_infallible();
+
     }
 }
