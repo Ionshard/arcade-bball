@@ -25,6 +25,7 @@ dependencies = [
  "embedded-hal 1.0.0",
  "nb 1.1.0",
  "panic-halt",
+ "switch-hal",
  "ufmt",
 ]
 
@@ -734,6 +735,15 @@ dependencies = [
  "svd-rs",
  "thiserror 1.0.69",
  "yaml-rust2",
+]
+
+[[package]]
+name = "switch-hal"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90a4adc8cbd1726249b161898e48e0f3f1ce74d34dc784cbbc98fba4ed283fbf"
+dependencies = [
+ "embedded-hal 0.2.7",
 ]
 
 [[package]]

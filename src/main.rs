@@ -6,6 +6,7 @@ use core::fmt::Debug;
 use arduino_hal::prelude::*;
 use arduino_hal::adc;
 use panic_halt as _;
+use switch_hal::{InputSwitch, IntoSwitch};
 use ufmt::{uwriteln};
 
 #[arduino_hal::entry]
@@ -44,6 +45,9 @@ fn main() -> ! {
     let a0 = pins.a0.into_analog_input(&mut adc);
 
 
+    let ball_sensor = pins.d2.into_active_low_switch();
+
+
     loop {
         led.toggle();
         let message = if switch.is_high() { "Pin (D7) is HIGH" } else { "Pin (D7) is LOW"};
@@ -51,6 +55,14 @@ fn main() -> ! {
 
         let a0_value = a0.analog_read(&mut adc);
         uwriteln!(&mut serial, "Analog A0: {}", a0_value).unwrap_infallible();
+
+
+        let is_ball = ball_sensor.is_active().unwrap_infallible();
+
+        match is_ball {
+            true => uwriteln!(&mut serial, "Ball sensor is ACTIVE").unwrap_infallible(),
+            false => uwriteln!(&mut serial, "Ball sensor is INACTIVE").unwrap_infallible(),
+        }
 
         arduino_hal::delay_ms(1000);
 
