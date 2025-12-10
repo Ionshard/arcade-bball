@@ -5,7 +5,6 @@ use core::fmt::Debug;
 
 use arduino_hal::prelude::*;
 use arduino_hal::adc;
-use embedded_dht_rs::dht11::Dht11;
 use panic_halt as _;
 use ufmt::{uwriteln};
 
@@ -45,10 +44,6 @@ fn main() -> ! {
     let a0 = pins.a0.into_analog_input(&mut adc);
 
 
-    let dht11_pin = pins.d2.into_opendrain_high();
-    let delay = arduino_hal::Delay::new();
-    let mut dht11 = Dht11::new(dht11_pin, delay);
-
     loop {
         led.toggle();
         let message = if switch.is_high() { "Pin (D7) is HIGH" } else { "Pin (D7) is LOW"};
@@ -57,21 +52,7 @@ fn main() -> ! {
         let a0_value = a0.analog_read(&mut adc);
         uwriteln!(&mut serial, "Analog A0: {}", a0_value).unwrap_infallible();
 
-        match dht11.read() {
-            Ok(measurement) => {
-                uwriteln!(&mut serial, "DHT11 Temperature: {}°C", measurement.temperature).unwrap_infallible();
-                uwriteln!(&mut serial, "DHT11 Humidity: {}%", measurement.humidity).unwrap_infallible();
-            }
-            Err(e) => {
-                match e {
-                    embedded_dht_rs::SensorError::ChecksumMismatch => uwriteln!(&mut serial, "DHT11 Checksum Mismatch").unwrap_infallible(),
-                    embedded_dht_rs::SensorError::Timeout => uwriteln!(&mut serial, "DHT11 Timeout Error").unwrap_infallible(),
-                    embedded_dht_rs::SensorError::PinError => uwriteln!(&mut serial, "DHT11 Pin Error").unwrap_infallible(),
-                }
-            }
-            
-        }
-                arduino_hal::delay_ms(1000);
+        arduino_hal::delay_ms(1000);
 
     }
 }
